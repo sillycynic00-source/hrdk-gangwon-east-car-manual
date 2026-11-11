@@ -12,6 +12,12 @@
     const matches = (Array.isArray(vehicles) ? vehicles : []).filter(v => v && v.id === id);
     return matches.length === 1 ? matches[0] : null;
   }
+  function resolveInsurance(vehicle, common) {
+    // Explicit vehicle insurance must not silently borrow a different insurer's number.
+    if (vehicle && (Object.hasOwn(vehicle,'insurer') || Object.hasOwn(vehicle,'accidentPhone')))
+      return {insurer:vehicle.insurer || '',accidentPhone:vehicle.accidentPhone || '',guide:vehicle.insuranceGuide || ''};
+    return common || null;
+  }
   function deploymentTarget(value, vehicleId) {
     if (!value) return null;
     try {
@@ -27,5 +33,5 @@
   function createReport(values) {
     return "공용차 교통사고 보고 초안\n" + reportFields.map(([key, label]) => label + ": " + (String(values[key] || "").trim() || "미확인")).join("\n");
   }
-  root.MANUAL_UTILS = { phoneInfo, selectVehicle, deploymentTarget, createReport };
+  root.MANUAL_UTILS = { phoneInfo, selectVehicle, resolveInsurance, deploymentTarget, createReport };
 })(typeof window !== "undefined" ? window : globalThis);

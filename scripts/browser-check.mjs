@@ -34,8 +34,13 @@ try{
  await navigate(origin+"/index.html");
  const normal=await evaluate('[...document.querySelectorAll("[data-internal-contacts]")].map(e=>[...e.querySelectorAll("a")].map(a=>({text:a.textContent,href:a.getAttribute("href")})))');
  assert.equal(normal.length,2);for(const pair of normal)assert.deepEqual(pair.map(p=>p.href),["tel:0336505744","tel:0336505745"]);findings.contactAreas=normal;
+ const commonInsurance=await evaluate('[...document.querySelectorAll("[data-insurance] a")].map(a=>a.getAttribute("href"))');
+ assert.deepEqual(commonInsurance,['tel:16881688','tel:16881688']);findings.commonInsurance=commonInsurance;
  await evaluate('document.querySelector("#start-mode").click()');
- for(let i=0;i<4;i++)await evaluate('document.querySelector("#next-step").click()');
+ for(let i=0;i<2;i++)await evaluate('document.querySelector("#next-step").click()');
+ const fieldInsurance=await evaluate('({href:document.querySelector("#mode-content [data-insurance] a").getAttribute("href"),text:document.querySelector("#mode-content [data-insurance]").textContent})');
+ assert.equal(fieldInsurance.href,'tel:16881688');assert.ok(fieldInsurance.text.includes('흥국화재'));findings.fieldInsurance=fieldInsurance;
+ for(let i=0;i<2;i++)await evaluate('document.querySelector("#next-step").click()');
  const mode=await evaluate('({open:document.querySelector("dialog").open,phones:[...document.querySelectorAll("#mode-content .phone")].map(a=>a.getAttribute("href")),overflow:document.querySelector("dialog").scrollWidth>document.querySelector("dialog").clientWidth,title:document.querySelector("#mode-content h3").textContent})');
  assert.ok(mode.open);assert.deepEqual(mode.phones,["tel:0336505744","tel:0336505745"]);assert.equal(mode.overflow,false);findings.mode=mode;
  await screenshot("field-report-390.png");
@@ -52,9 +57,11 @@ try{
  const report=await evaluate('({value:document.querySelector("#report-output").value,start:document.querySelector("#report-output").selectionStart,end:document.querySelector("#report-output").selectionEnd,status:document.querySelector("#report-status").textContent})');assert.equal(report.start,0);assert.equal(report.end,report.value.length);findings.reportCopyFallback=report.status;
  await evaluate('document.querySelector("#report-form").reset()');assert.equal(await evaluate('document.querySelector("#report-output").value'),"");
  await navigate(origin+"/index.html?vehicle=unknown");
- assert.equal(await evaluate('document.querySelector("[data-insurance] button").disabled'),true);findings.unknownVehicle=true;
+ assert.equal(await evaluate('document.querySelector("[data-insurance] a").getAttribute("href")'),'tel:16881688');
+ assert.equal(await evaluate('document.querySelector("#report-plate").value'),'');findings.unknownVehicleCommonInsurance=true;
  await send("Emulation.setScriptExecutionDisabled",{value:true});await navigate(origin+"/index.html");
  assert.equal(await evaluate('document.querySelectorAll("[data-step]").length'),6);assert.equal(await evaluate('document.querySelectorAll("[data-internal-contacts] a").length'),4);findings.noJavascript=true;
+ assert.equal(await evaluate('document.querySelectorAll("[data-insurance] a[href="+JSON.stringify("tel:16881688")+"]").length'),2);
  await navigate(origin+"/print.html");
  const staticQr=await evaluate('({image:document.querySelector("[data-qr] img")?.naturalWidth||0,target:document.querySelector("[data-card-url]").textContent})');
  if(await evaluate('Boolean(window.MANUAL_CONFIG)'))throw Error('Scripts unexpectedly ran in static print check');
@@ -65,6 +72,8 @@ try{
  assert.equal(await evaluate('document.querySelectorAll("[data-qr] svg").length'),productionTarget?1:0);
  findings.productionQr=await evaluate('document.querySelector("[data-card-url]").textContent');
  if(productionTarget)assert.equal(findings.productionQr,productionTarget);
+ const insuranceCard=await evaluate('({text:document.querySelector("[data-card-vehicle]").textContent,href:document.querySelector("[data-card-vehicle] a").getAttribute("href")})');
+ assert.equal(insuranceCard.href,'tel:16881688');assert.ok(insuranceCard.text.includes('흥국화재'));findings.insuranceCard=insuranceCard;
  // Decode the exported PNG, exported SVG and the actual 35mm card QR independently.
  if(productionTarget&&fs.existsSync(path.join(qa,'jsQR.js'))){
   await evaluate(fs.readFileSync(path.join(qa,'jsQR.js'),'utf8'));

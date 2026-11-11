@@ -31,20 +31,23 @@ function renderContacts() {
   });
 }
 function renderInsurance() {
-  const phone = currentVehicle && utils.phoneInfo(currentVehicle.accidentPhone);
+  const insurance = utils.resolveInsurance(currentVehicle,config.insurance);
+  const phone = insurance && utils.phoneInfo(insurance.accidentPhone);
   $$("[data-insurance]").forEach(box => {
     const p = document.createElement("p");
-    p.textContent = currentVehicle ? (currentVehicle.insurer || "보험사 확인 필요") : vehicleId ? "등록되지 않은 차량 · 보험 연락처 확인 필요" : "차량별 보험 연락처 확인 필요";
-    const call = phone && currentVehicle.insurer ? button(phone.label, phone.href) : document.createElement("button");
-    if (!phone || !currentVehicle?.insurer) { call.type = "button"; call.disabled = true; call.textContent = "보험사 전화 · 확인 필요"; }
-    else call.setAttribute("aria-label", currentVehicle.insurer + " 사고접수 " + phone.label + " 전화");
+    p.textContent = insurance?.insurer || "보험사 확인 필요";
+    const call = phone && insurance?.insurer ? button(phone.label, phone.href) : document.createElement("button");
+    if (!phone || !insurance?.insurer) { call.type = "button"; call.disabled = true; call.textContent = "보험사 전화 · 확인 필요"; }
+    else call.setAttribute("aria-label", insurance.insurer + " 사고접수 및 긴급출동 " + phone.label + " 전화");
     box.replaceChildren(p, call);
+    if(insurance?.guide){const guide=document.createElement('p');guide.className='small';guide.textContent=insurance.guide;box.append(guide);}
   });
 }
 function renderVehicle() {
   currentVehicle = utils.selectVehicle(vehicles, vehicleId);
   const status = $("#vehicle-status");
-  if (status) status.textContent = currentVehicle ? [currentVehicle.plate || "차량번호 확인 필요", currentVehicle.model || "차종 확인 필요", currentVehicle.insurer || "보험사 확인 필요"].join(" · ") : vehicleId ? "등록되지 않은 차량입니다. 차량 식별자와 보험 연락처를 확인하세요." : vehicles.length ? "차량을 선택하면 해당 차량의 보험 연락처를 확인할 수 있습니다." : "차량 정보 미등록 · 차량별 보험 연락처 확인 필요";
+  const insurance=utils.resolveInsurance(currentVehicle,config.insurance);
+  if (status) status.textContent = currentVehicle ? [currentVehicle.plate || "차량번호 확인 필요", currentVehicle.model || "차종 확인 필요", insurance?.insurer || "보험사 확인 필요"].join(" · ") : vehicleId ? "등록되지 않은 차량입니다. 차량 식별자를 확인하세요. 아래는 공단 공통 보험 연락처입니다." : vehicles.length ? "공단 공통 보험 연락처입니다. 차량별 정보는 차량 선택 후 확인하세요." : "공단 공통 보험 연락처 · 차량번호는 신고 시 직접 알려 주세요.";
   renderInsurance();
   const plate = $("#report-plate"); if (plate) plate.value = currentVehicle?.plate || "";
   const link = $("#print-link") || $("#back-link");
@@ -161,15 +164,22 @@ function renderCards() {
   } else box.textContent = vehicleId && !currentVehicle ? "차량 식별자 확인 후 생성" : "배포 주소 설정 후 생성";
   $("[data-card-url]", card).textContent = usableTarget ? target : "배포 주소 설정 후 표시";
   const vehicle = $("[data-card-vehicle]", card);
-  const phone = currentVehicle && utils.phoneInfo(currentVehicle.accidentPhone);
+  const insurance=utils.resolveInsurance(currentVehicle,config.insurance);
+  const phone = insurance && utils.phoneInfo(insurance.accidentPhone);
   vehicle.replaceChildren();
   if (currentVehicle) {
     const text = document.createElement("span");
-    text.textContent = (currentVehicle.plate || "차량번호 확인 필요") + " · " + (currentVehicle.insurer || "보험사 확인 필요") + " ";
+    text.textContent = (currentVehicle.plate || "차량번호 확인 필요") + " · " + (insurance?.insurer || "보험사 확인 필요") + " ";
     vehicle.append(text);
-    if (phone && currentVehicle.insurer) { const call = document.createElement("a"); call.href = phone.href; call.textContent = phone.label; vehicle.append(call); }
+    if (phone && insurance?.insurer) { const call = document.createElement("a"); call.href = phone.href; call.textContent = phone.label; vehicle.append(call); }
     else vehicle.append(document.createTextNode("보험 연락처 확인 필요"));
-  } else vehicle.textContent = vehicleId ? "등록되지 않은 차량 · 보험 연락처 확인 필요" : "공통 안내카드 · 차량별 보험 연락처 확인 필요";
+  } else {
+    const text=document.createElement('span');
+    text.textContent=(vehicleId ? '미등록 차량 · 공통 보험: ' : '공통 보험: ')+(insurance?.insurer || '보험사 확인 필요')+' ';
+    vehicle.append(text);
+    if(phone&&insurance?.insurer){const call=document.createElement('a');call.href=phone.href;call.textContent=phone.label;vehicle.append(call);}
+    else vehicle.append(document.createTextNode('보험 연락처 확인 필요'));
+  }
   status.textContent = qrReady ? "설정한 배포 주소로 QR을 생성했습니다. 실제 접속과 최종 인쇄 크기에서 스캔을 확인한 뒤 비치하세요." : "검토용 카드 · " + box.textContent + ". 실제 배포 전 설정과 스캔 확인이 필요합니다.";
   if (!qrReady) status.className = "warning"; else status.className = "";
   const isA4 = $("#paper-size").value === "a4";
