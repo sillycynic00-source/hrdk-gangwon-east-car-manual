@@ -4,3 +4,4 @@
 @media print{html,body{width:auto;margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.print-controls{display:none}.print-sheet,.print-sheet.a4{margin:0}.qr-card{break-inside:avoid;page-break-inside:avoid}.print-sheet.a4{display:grid;grid-template-columns:105mm 105mm}.qr-card a{color:#122f50}.qr-card .button{box-shadow:none}}
 
 @media screen{.qr-card .phone{min-height:48px}.qr-card{height:auto;min-height:148mm;gap:1.5mm}}
+.qr-box img{display:block;width:35mm;height:35mm;object-fit:contain}

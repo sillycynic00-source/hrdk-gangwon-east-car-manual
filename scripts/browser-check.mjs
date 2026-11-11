@@ -55,16 +55,40 @@ try{
  assert.equal(await evaluate('document.querySelector("[data-insurance] button").disabled'),true);findings.unknownVehicle=true;
  await send("Emulation.setScriptExecutionDisabled",{value:true});await navigate(origin+"/index.html");
  assert.equal(await evaluate('document.querySelectorAll("[data-step]").length'),6);assert.equal(await evaluate('document.querySelectorAll("[data-internal-contacts] a").length'),4);findings.noJavascript=true;
+ await navigate(origin+"/print.html");
+ const staticQr=await evaluate('({image:document.querySelector("[data-qr] img")?.naturalWidth||0,target:document.querySelector("[data-card-url]").textContent})');
+ if(await evaluate('Boolean(window.MANUAL_CONFIG)'))throw Error('Scripts unexpectedly ran in static print check');
+ assert.ok(staticQr.image>0,'Static print QR did not load without JavaScript');
+ findings.noJavascriptPrint=staticQr;
  await send("Emulation.setScriptExecutionDisabled",{value:false});await navigate(origin+"/print.html");
- assert.equal(await evaluate('document.querySelectorAll("[data-qr] svg").length'),0);
- findings.unconfiguredQr=await evaluate('document.querySelector("[data-qr]").textContent');
+ const productionTarget=await evaluate('window.MANUAL_UTILS.deploymentTarget(window.MANUAL_CONFIG.deploymentUrl)');
+ assert.equal(await evaluate('document.querySelectorAll("[data-qr] svg").length'),productionTarget?1:0);
+ findings.productionQr=await evaluate('document.querySelector("[data-card-url]").textContent');
+ if(productionTarget)assert.equal(findings.productionQr,productionTarget);
+ // Decode the exported PNG, exported SVG and the actual 35mm card QR independently.
+ if(productionTarget&&fs.existsSync(path.join(qa,'jsQR.js'))){
+  await evaluate(fs.readFileSync(path.join(qa,'jsQR.js'),'utf8'));
+  const decoded=await evaluate(`(async()=>{const results={};for(const [key,source]of [['png','./downloads/manual-qr.png'],['svg','./downloads/manual-qr.svg'],['card',document.querySelector('[data-qr] svg')]]){let url=source;if(key==='card')url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(source)],{type:'image/svg+xml'}));const img=new Image();img.src=url;await img.decode();const size=key==='card'?132:Math.max(img.naturalWidth,600);const canvas=document.createElement('canvas');canvas.width=canvas.height=size;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,size,size);ctx.drawImage(img,0,0,size,size);results[key]=window.jsQR(ctx.getImageData(0,0,size,size).data,size,size)?.data||null;if(key==='card')URL.revokeObjectURL(url);}return results;})()`);
+  for(const value of Object.values(decoded))assert.equal(value,productionTarget);
+  findings.independentQrDecode=decoded;
+ }
  const cardFit=await evaluate('({w:document.querySelector(".qr-card").clientWidth,h:document.querySelector(".qr-card").clientHeight,scrollH:document.querySelector(".qr-card").scrollHeight,logo:document.querySelector(".card-logo img").currentSrc,phones:[...document.querySelectorAll("[data-internal-contacts] a")].map(a=>a.getAttribute("href"))})');
  assert.ok(cardFit.scrollH<=cardFit.h+1,JSON.stringify(cardFit));assert.deepEqual(cardFit.phones,["tel:0336505744","tel:0336505745"]);findings.cardFit=cardFit;
  await size(800,1000,false);await screenshot("card-a6.png");
  function paper(data,w,h){const bytes=Buffer.from(data,"base64");const m=bytes.toString("latin1").match(/\/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]/);assert.ok(m,"Missing paper size");assert.ok(Math.abs(Number(m[1])-w)<2&&Math.abs(Number(m[2])-h)<2,JSON.stringify(m));return{width:Number(m[1]),height:Number(m[2])};} findings.paperSizes={};let pdf=await send("Page.printToPDF",{printBackground:true,preferCSSPageSize:true});findings.paperSizes.a6=paper(pdf.data,297.64,419.53);fs.writeFileSync(path.join(qa,"card-a6-review.pdf"),Buffer.from(pdf.data,"base64"));
+ if(productionTarget){
+  fs.copyFileSync(path.join(qa,'card-a6-review.pdf'),path.join(root,'downloads/vehicle-card-a6.pdf'));
+  await send('Emulation.setEmulatedMedia',{media:'print'});
+  const fit=await evaluate(`(()=>{const card=document.querySelector('.qr-card');const r=card.getBoundingClientRect();return {height:r.height,scroll:card.scrollHeight,children:[...card.children].every(el=>el.getBoundingClientRect().bottom<=r.bottom+1)}})()`);
+  assert.ok(fit.children,'A6 card content extends beyond print boundary');
+  findings.productionPrintFit=fit;
+  await screenshot('card-a6-production.png');
+  await send('Emulation.setEmulatedMedia',{media:''});
+ }
  await evaluate('document.querySelector("#paper-size").value="a4";document.querySelector("#paper-size").dispatchEvent(new Event("change"))');
  assert.equal(await evaluate('document.querySelectorAll(".qr-card").length'),4);
  pdf=await send("Page.printToPDF",{printBackground:true,preferCSSPageSize:true});findings.paperSizes.a4=paper(pdf.data,595.28,841.89);fs.writeFileSync(path.join(qa,"card-a4-review.pdf"),Buffer.from(pdf.data,"base64"));
+ if(productionTarget)fs.copyFileSync(path.join(qa,'card-a4-review.pdf'),path.join(root,'downloads/vehicle-cards-a4.pdf'));
  // Use transient QA data in memory only; do not register fictitious production vehicles.
  await evaluate('window.MANUAL_CONFIG.deploymentUrl="https://qa-user.github.io/manual/index.html";window.MANUAL_CONFIG.vehicles.push({id:"qa-a",plate:"QA-A",model:"QA",insurer:"Insurer A",accidentPhone:"0211112222"},{id:"qa-b",plate:"QA-B",model:"QA",insurer:"Insurer B",accidentPhone:"0233334444"});const option=document.createElement("option");option.value="qa-b";document.querySelector("#vehicle-select").append(option);document.querySelector("#vehicle-select").value="qa-b";document.querySelector("#vehicle-select").dispatchEvent(new Event("change"))');
  const qaCard=await evaluate('({url:document.querySelector("[data-card-url]").textContent,vehicle:document.querySelector("[data-card-vehicle]").textContent,phone:document.querySelector("[data-card-vehicle] a").getAttribute("href"),svg:document.querySelectorAll("[data-qr] svg").length,quietZone:document.querySelector("[data-qr] svg").getAttribute("viewBox")})');

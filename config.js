@@ -2,8 +2,8 @@
 window.MANUAL_CONFIG = {
   version: "2026-11-11.1",
   reviewedAt: "2026-11-11",
-  // 실제 매뉴얼 index.html 주소. 배포 전에는 빈 문자열로 유지합니다.
-  deploymentUrl: "",
+  // GitHub Pages 배포 성공과 HTTP 200 응답을 확인한 운영 주소입니다.
+  deploymentUrl: "https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/",
   internalContact: {
     label: "강원동부지사 안전담당",
     phones: ["033-650-5744", "033-650-5745"]

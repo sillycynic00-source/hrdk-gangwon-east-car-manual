@@ -4,6 +4,19 @@
 확정 연락처: **강원동부지사 안전담당 · 033-650-5744 / 033-650-5745**.
 두 번호는 내부 연락처, STEP 05, 현장 대응 모드 STEP 05, QR 안내카드에 각각 전화 링크로 표시합니다. 개인 이름은 표시하지 않습니다.
 
+## 운영 사이트와 인쇄 파일
+
+- [운영 매뉴얼](https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/)
+- [차량 비치용 QR 안내카드](https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/print.html)
+- [인쇄용 QR PNG](downloads/manual-qr.png) · [인쇄용 QR SVG](downloads/manual-qr.svg)
+- [A6 안내카드 PDF](downloads/vehicle-card-a6.pdf) · [A4 4장 배치 PDF](downloads/vehicle-cards-a4.pdf)
+
+2026-11-11 GitHub Pages 배포 성공 및 실제 매뉴얼의 HTTP 200 응답을 확인했습니다.
+QR은 GitHub Pages API가 반환한 위 운영 주소를 인코딩합니다.
+PNG 1470 × 1470px, 600dpi 메타데이터, SVG 35mm, 4모듈 흰 여백을 사용합니다.
+독립 판독기로 PNG·SVG·35mm 안내카드 QR에서 동일한 운영 주소가 나오는 것을 확인했습니다.
+PDF는 공통 안내카드입니다. 차량별 보험 정보는 아직 미등록 상태입니다.
+
 ## 바로 열기
 
 이 폴더의 `index.html`을 브라우저로 열면 기본 절차와 전화 버튼이 작동합니다.
@@ -20,7 +33,7 @@ npm start
 로컬 주소: http://127.0.0.1:4173
 검증: `npm test` / 배포 파일 준비: `npm run build` (`_site/` 생성)
 
-## GitHub Pages 배포
+## 다른 저장소로 다시 배포할 때
 
 이 폴더 전체를 **독립 GitHub 저장소의 최상위**에 올리세요.
 기존 상위 대시보드의 파일이나 .env는 이 저장소에 포함하지 않습니다.
@@ -35,8 +48,10 @@ npm start
 자동 배포가 필요 없다면 `_site/`의 내용만 별도 저장소 최상위로 올린 뒤 Pages의 Deploy from a branch를 사용해도 됩니다.
 저장소를 이 프로젝트 폴더를 포함하는 형태로 올릴 경우 Actions의 작업 경로와 업로드 경로를 해당 폴더에 맞게 바꿔야 합니다.
 정적 파일은 모두 상대 경로이므로 GitHub Pages의 저장소 하위 경로에서도 작동합니다.
-배포 주소는 현재 미확정이므로 QR은 **배포 주소 설정 후 생성** 상태입니다.
-이번 작업은 코드 및 배포 구성 준비이며 원격 GitHub 게시를 수행하지 않았습니다.
+현재 저장소에서는 GitHub Actions를 통한 Pages 게시가 활성화되어 있습니다.
+주소가 달라지면 운영 페이지 접속을 먼저 확인하고 QR과 PDF를 다시 생성하세요.
+`npm run qr:export`는 설정 주소의 실제 매뉴얼을 확인한 뒤 PNG와 SVG를 만듭니다.
+`node scripts/browser-check.mjs`는 설치된 Chrome으로 공통 A6/A4 PDF를 다시 만듭니다.
 
 ## 수정 위치
 
@@ -120,7 +135,7 @@ QR 안내카드에서 차량 선택 시 해당 차량과 보험 연락처가 함
 
 ## 배포 전 확정·실기 확인
 
-- 실제 GitHub 저장소와 최종 운영 주소
+- 운영 주소를 바꾸는 경우 새 주소 접속 확인과 QR·PDF 재생성
 - 차량별 실제 번호·차종·가입 보험사·사고접수 번호
 - 지사 내부 보고 기한과 제출 자료
 - 실제 모바일 전화 연결, 위치 권한 동작과 로고의 작은 글자 가독성

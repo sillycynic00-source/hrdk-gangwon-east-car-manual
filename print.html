@@ -1,19 +1,29 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>차량 비치용 QR 안내카드 | 강원동부지사</title><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./print.css"><script src="./config.js" defer></script><script src="./vendor/qrcode.js" defer></script><script src="./logic.js" defer></script><script src="./app.js" defer></script></head>
 <body class="print-page">
-<header class="print-controls"><a class="button" id="back-link" href="./index.html">← 매뉴얼</a><h1>차량 비치용 QR 안내카드</h1><div class="print-options"><label for="vehicle-select">차량 선택</label><select id="vehicle-select"><option value="">공통 안내카드</option></select><label for="paper-size">인쇄 배치</label><select id="paper-size"><option value="a6">A6 세로 · 1장</option><option value="a4">A4 세로 · 4장</option></select><button type="button" class="button primary" id="print-button">인쇄 / PDF 저장</button></div><p id="vehicle-status" role="status"></p><p>실제 크기 100% · 머리글/바닥글 끄기 · 선택한 용지 크기로 인쇄하세요.</p><p id="print-status" role="status">배포 주소 설정 후 QR 생성 · 현재는 검토용 카드입니다.</p><noscript><p>QR 생성과 인쇄 배치 선택은 스크립트가 필요합니다. 기본 A6 카드는 브라우저 인쇄 메뉴로 인쇄할 수 있습니다.</p></noscript></header>
+<header class="print-controls">
+<a class="button" id="back-link" href="./index.html">← 매뉴얼</a>
+<h1>차량 비치용 QR 안내카드</h1>
+<div class="print-options"><label for="vehicle-select">차량 선택</label><select id="vehicle-select"><option value="">공통 안내카드</option></select><label for="paper-size">인쇄 배치</label><select id="paper-size"><option value="a6">A6 세로 · 1장</option><option value="a4">A4 세로 · 4장</option></select><button type="button" class="button primary" id="print-button">인쇄 / PDF 저장</button></div>
+<p id="vehicle-status" role="status"></p>
+<p>실제 크기 100% · 머리글/바닥글 끄기 · 선택한 용지 크기로 인쇄하세요.</p>
+<p id="print-status" role="status">확인된 운영 주소의 QR코드를 적용했습니다.</p>
+<noscript><p>차량 선택과 인쇄 배치 변경은 스크립트가 필요합니다. 공통 QR이 포함된 A6 카드는 브라우저 인쇄 메뉴로 인쇄할 수 있습니다.</p></noscript>
+<p>공통 안내카드 파일 · 차량별 카드는 차량 선택 후 인쇄하세요.</p>
+<div class="actions"><a class="button" href="./downloads/manual-qr.png" download>QR PNG 다운로드</a><a class="button" href="./downloads/manual-qr.svg" download>QR SVG 다운로드</a><a class="button" href="./downloads/vehicle-card-a6.pdf" download>A6 카드 PDF</a><a class="button" href="./downloads/vehicle-cards-a4.pdf" download>A4 4장 PDF</a></div>
+</header>
 <main class="print-sheet" id="print-sheet">
 <article class="qr-card">
 <div class="card-logo"><img src="./assets/logo-vertical.png" alt="한국산업인력공단 강원동부지사"></div>
 <h2>공용차 교통사고 대응</h2>
 <p class="card-flow">먼저 안전 확보 → 긴급 신고<br>→ 보험 접수·기관 보고</p>
-<div class="qr-box" data-qr><span>배포 주소 설정 후 생성</span></div>
+<div class="qr-box ready" data-qr><img src="./downloads/manual-qr.svg" alt="공용차 사고대응 매뉴얼 QR코드"></div>
 <p class="scan-guide">QR코드를 스캔하여<br>단계별 대응 절차를 확인하세요.</p>
 <p class="card-warning">운전 중 조작 금지 · 안전한 곳에서 확인</p>
 <div class="card-emergency"><a href="tel:119">119 구조·구급·화재</a><a href="tel:112">112 경찰</a></div>
 <div class="internal-contact" data-internal-contacts><p class="contact-label">강원동부지사 안전담당</p><div class="phone-pair"><a class="button phone" href="tel:0336505744" aria-label="강원동부지사 안전담당 033-650-5744 전화">☎ 033-650-5744</a><a class="button phone" href="tel:0336505745" aria-label="강원동부지사 안전담당 033-650-5745 전화">☎ 033-650-5745</a></div></div>
 <div data-card-vehicle class="card-vehicle">공통 안내카드 · 차량별 보험 연락처 확인 필요</div>
-<p class="card-url" data-card-url>배포 주소 설정 후 표시</p>
+<p class="card-url" data-card-url>https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/</p>
 <p class="card-date">자료 확인일 <span data-reviewed>2026-11-11</span> · v<span data-version>2026-11-11.1</span></p>
 </article>
 </main></body></html>
