@@ -7,6 +7,7 @@
 ## 운영 사이트와 인쇄 파일
 
 - [운영 매뉴얼](https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/)
+- [전체 매뉴얼 PDF · A4 5쪽](downloads/vehicle-accident-manual.pdf): 대응 6단계, 상황별 안내, 연락처와 사고보고 전달 항목을 담았습니다. 다운로드 후 인터넷 없이 열람할 수 있습니다.
 - [차량 비치용 QR 안내카드](https://sillycynic00-source.github.io/hrdk-gangwon-east-car-manual/print.html)
 - [인쇄용 QR PNG](downloads/manual-qr.png) · [인쇄용 QR SVG](downloads/manual-qr.svg)
 - [A6 안내카드 PDF](downloads/vehicle-card-a6.pdf) · [A4 4장 배치 PDF](downloads/vehicle-cards-a4.pdf)
@@ -52,6 +53,7 @@ npm start
 주소가 달라지면 운영 페이지 접속을 먼저 확인하고 QR과 PDF를 다시 생성하세요.
 `npm run qr:export`는 설정 주소의 실제 매뉴얼을 확인한 뒤 PNG와 SVG를 만듭니다.
 `node scripts/browser-check.mjs`는 설치된 Chrome으로 공통 A6/A4 PDF를 다시 만듭니다.
+`npm run manual:export`는 설치된 Chrome으로 전체 매뉴얼 A4 PDF를 다시 만듭니다.
 
 ## 수정 위치
 
