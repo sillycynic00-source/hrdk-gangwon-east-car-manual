@@ -1,0 +1,12 @@
+{
+  "name": "gangwon-east-vehicle-accident-manual",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/check.mjs",
+    "build": "node scripts/package.mjs"
+  }
+}

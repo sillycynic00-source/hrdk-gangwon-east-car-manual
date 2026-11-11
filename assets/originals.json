@@ -1,0 +1,23 @@
+[
+  {
+    "original": "시그니처 지사_좌우조합A 강원동부.png",
+    "file": "logo-horizontal-a.png",
+    "width": 851,
+    "height": 159,
+    "sha256": "05b4ff1c87985f5048835ac9d35ff888c709f696801b9bc2660773221dc94313"
+  },
+  {
+    "original": "시그니처 지사_좌우조합B 강원동부.png",
+    "file": "logo-horizontal-b.png",
+    "width": 1374,
+    "height": 121,
+    "sha256": "4cc0c3ade206ae9e1a324077bb9e430730af2fdc02ec6712290917adcde1e84a"
+  },
+  {
+    "original": "시그니처 지사_상하조합 강원동부.png",
+    "file": "logo-vertical.png",
+    "width": 455,
+    "height": 266,
+    "sha256": "d54f268e469667ebb7d49295fa9ef70867f430035703b54d2c90f5a26237e286"
+  }
+]
